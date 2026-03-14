@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Products – CoreInventory{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary" onclick="openModal('modal-product')">+ New Product</button>
+{% endblock %}
+
+{% block content %}
+
+<form method="get" action="/products/">
+  <div class="filter-bar">
+    <input class="search-input" name="search" value="{{ search }}" placeholder="Search name or SKU...">
+    <select class="filter-select" name="category" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+      <option value="{{ cat.name }}" {% if category==cat.name %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn">Search</button>
+    {% if search or category %}<a href="/products/" class="btn">Clear</a>{% endif %}
+  </div>
+</form>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th><th>SKU</th><th>Category</th><th>Unit</th>
+        <th>On Hand</th><th>Min Qty</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      {% set pct = [[(p.total_stock / p.min_qty * 100) if p.min_qty > 0 else 100, 0]|max, 100]|min %}
+      <tr>
+        <td><a href="/products/{{ p.id }}" style="font-weight:500">{{ p.name }}</a></td>
+        <td class="td-mono">{{ p.sku }}</td>
+        <td class="td-muted">{{ p.category.name if p.category else '—' }}</td>
+        <td class="td-muted">{{ p.unit }}</td>
+        <td>
+          <strong>{{ p.total_stock|int }}</strong>
+          <div class="stock-bar">
+            <div class="stock-fill {% if p.stock_status=='out' %}danger{% elif p.stock_status=='low' %}warn{% endif %}"
+                 style="width:{{ pct }}%"></div>
+          </div>
+        </td>
+        <td class="td-muted">{{ p.min_qty|int }}</td>
+        <td>
+          <span class="badge badge-{{ p.stock_status }}">
+            {% if p.stock_status=='ok' %}In stock{% elif p.stock_status=='low' %}Low stock{% else %}Out of stock{% endif %}
+          </span>
+        </td>
+        <td>
+          <div class="td-actions">
+            <a href="/products/{{ p.id }}" class="btn btn-sm">View</a>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty-state">No products found</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- New Product Modal -->
+<div class="modal-backdrop" id="modal-product">
+  <div class="modal">
+    <div class="modal-title">New Product</div>
+    <form method="post" action="/products/create">
+      <div class="form-grid form-row">
+        <div>
+          <label class="form-label">Product Name</label>
+          <input class="form-input" name="name" placeholder="e.g. Steel Rods" required>
+        </div>
+        <div>
+          <label class="form-label">SKU / Code</label>
+          <input class="form-input" name="sku" placeholder="SKU-001" required>
+        </div>
+      </div>
+      <div class="form-grid form-row">
+        <div>
+          <label class="form-label">Category</label>
+          <select class="form-select" name="category_id" required>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Unit of Measure</label>
+          <select class="form-select" name="unit">
+            <option>kg</option><option>units</option><option>pcs</option><option>liters</option><option>m</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid form-row">
+        <div>
+          <label class="form-label">Min Quantity (reorder)</label>
+          <input class="form-input" name="min_qty" type="number" value="0" min="0">
+        </div>
+        <div>
+          <label class="form-label">Initial Stock</label>
+          <input class="form-input" name="initial_stock" type="number" value="0" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Initial Stock Location</label>
+        <select class="form-select" name="warehouse_id">
+          {% for w in categories %}{% endfor %}
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal('modal-product')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Inject warehouses into product form
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/api/warehouses').then(r=>r.json()).then(data=>{
+    const sel = document.querySelector('[name="warehouse_id"]');
+    sel.innerHTML = data.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+  }).catch(()=>{});
+});
+</script>
+{% endblock %}

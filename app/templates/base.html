@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CoreInventory{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/main.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+{% if user %}
+<div id="app">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></svg>
+      </div>
+      <span class="brand-name">CoreInventory</span>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <a class="nav-item {% if active=='dashboard' %}active{% endif %}" href="/">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h6v6H1zM9 1h6v6H9zM1 9h6v6H1zM9 9h6v6H9z"/></svg>
+        Dashboard
+      </a>
+
+      <div class="nav-label">Products</div>
+      <a class="nav-item {% if active=='products' %}active{% endif %}" href="/products/">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0L0 4v8l8 4 8-4V4zM8 2.2l5.5 2.8L8 7.8 2.5 5zM2 6.3l5 2.5v4.9L2 11.2zM9 13.7V8.8l5-2.5v4.9z"/></svg>
+        Products
+      </a>
+
+      <div class="nav-label">Operations</div>
+      <a class="nav-item {% if active=='receipts' %}active{% endif %}" href="/receipts">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 1h12v14H2zM4 4h8v1H4zM4 7h8v1H4zM4 10h5v1H4z"/></svg>
+        Receipts
+      </a>
+      <a class="nav-item {% if active=='deliveries' %}active{% endif %}" href="/deliveries">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4h10v1.5L12 7l4 1v4h-1a2 2 0 01-4 0H5a2 2 0 01-4 0H0V4zm1 1v5h1a2 2 0 013.7-.8H9V5H1zm10 2.5v3.5h1a2 2 0 013 1.3V8.7L13 8l-2-.5zM3 11a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z"/></svg>
+        Deliveries
+      </a>
+      <a class="nav-item {% if active=='transfers' %}active{% endif %}" href="/transfers">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3l-4 4 4 4V8h6V6H5zm6 6l4-4-4-4v3H5v2h6z"/></svg>
+        Transfers
+      </a>
+      <a class="nav-item {% if active=='adjustments' %}active{% endif %}" href="/adjustments">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7 1v6H1v2h6v6h2V9h6V7H9V1z"/></svg>
+        Adjustments
+      </a>
+      <a class="nav-item {% if active=='history' %}active{% endif %}" href="/history">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a1 1 0 011 1v3.59l2.2 2.2a1 1 0 01-1.4 1.42L7.3 8.7A1 1 0 017 8V4a1 1 0 011-1z"/></svg>
+        Move History
+      </a>
+
+      <div class="nav-label">Config</div>
+      <a class="nav-item {% if active=='settings' %}active{% endif %}" href="/settings">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1l-.5 2a5 5 0 00-1.2.7L2.7 3 1.2 5.6l1.7 1.2a5 5 0 000 1.4L1.2 9.4 2.7 12l2.1-.7c.4.3.8.5 1.2.7l.5 2h3l.5-2c.4-.2.8-.4 1.2-.7l2.1.7 1.5-2.6-1.7-1.2a5 5 0 000-1.4l1.7-1.2L13.3 3l-2.1.7A5 5 0 0010 3L9.5 1zm1.5 5a2 2 0 110 4 2 2 0 010-4z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="avatar">{{ user.name[:2].upper() }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ user.name }}</div>
+          <div class="user-role">{{ user.role.title() }}</div>
+        </div>
+      </div>
+      <a href="/logout" class="nav-item" style="margin-top:4px;color:var(--text-muted)">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M6 2H2v12h4v-2H4V4h2zm4 3l-1.5 1.5L10 8H5v2h5l-1.5 1.5L10 13l4-4z"/></svg>
+        Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main">
+    <div class="topbar">
+      <span class="topbar-title">{% block page_title %}Dashboard{% endblock %}</span>
+      <div class="topbar-actions">
+        {% block topbar_actions %}{% endblock %}
+      </div>
+    </div>
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% else %}
+{% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="/static/js/main.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

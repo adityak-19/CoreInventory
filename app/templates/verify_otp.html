@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block auth_content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-icon" style="width:32px;height:32px;background:#1a1a18;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 16 16" fill="#f8f7f4" width="16" height="16"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></svg>
+      </div>
+      <span style="font-size:15px;font-weight:500;font-family:'IBM Plex Sans',sans-serif">CoreInventory</span>
+    </div>
+    <div class="auth-title">Verify OTP</div>
+    <div class="auth-sub">Enter the 6-digit code sent to your email</div>
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/verify-otp">
+      <input type="hidden" name="email" value="{{ email }}">
+      
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" value="{{ email }}" disabled style="background:#f9f9f9;color:#888;">
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">6-digit OTP</label>
+        <input class="form-input" type="text" name="otp" placeholder="123456" required pattern="\d{6}" maxlength="6" style="letter-spacing: 2px; font-weight: bold; text-align: center;">
+      </div>
+      
+      <div class="form-row">
+        <label class="form-label">New Password</label>
+        <input class="form-input" type="password" name="new_password" placeholder="••••••••" required>
+      </div>
+      
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px">Reset Password</button>
+    </form>
+    
+    <div class="auth-foot" style="margin-top:20px;">
+      <a href="/forgot-password">Resend OTP</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

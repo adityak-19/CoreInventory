@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Move History – CoreInventory{% endblock %}
+{% block page_title %}Move History{% endblock %}
+
+{% block content %}
+
+<form method="get" action="/history">
+  <div class="filter-bar">
+    <select class="filter-select" name="product_id" onchange="this.form.submit()">
+      <option value="">All Products</option>
+      {% for p in products %}
+      <option value="{{ p.id }}" {% if product_id==p.id|string %}selected{% endif %}>{{ p.name }}</option>
+      {% endfor %}
+    </select>
+    <select class="filter-select" name="move_type" onchange="this.form.submit()">
+      <option value="">All Types</option>
+      <option value="in" {% if move_type=='in' %}selected{% endif %}>Incoming</option>
+      <option value="out" {% if move_type=='out' %}selected{% endif %}>Outgoing</option>
+      <option value="transfer" {% if move_type=='transfer' %}selected{% endif %}>Transfer</option>
+      <option value="adjustment" {% if move_type=='adjustment' %}selected{% endif %}>Adjustment</option>
+    </select>
+    {% if product_id or move_type %}<a href="/history" class="btn">Clear</a>{% endif %}
+  </div>
+</form>
+
+<div class="table-wrap">
+  {% if ledger %}
+  <div id="ledger-list">
+    {% for entry in ledger %}
+    <div class="ledger-item">
+      <div class="ledger-dot dot-{{ entry.move_type }}"></div>
+      <div class="ledger-body">
+        <div class="ledger-desc">{{ entry.description }}</div>
+        <div class="ledger-meta">
+          {{ entry.reference }} &middot; {{ entry.warehouse.name }} &middot; {{ entry.created_at.strftime('%b %d, %Y %H:%M') }}
+        </div>
+      </div>
+      <div class="ledger-qty
+        {% if entry.qty_change > 0 %}qty-pos
+        {% elif entry.qty_change < 0 %}qty-neg
+        {% else %}qty-neutral{% endif %}">
+        {{ '%+.0f'|format(entry.qty_change) }} {{ entry.product.unit }}
+        <div style="font-size:10px;color:var(--text-faint);font-weight:400;text-align:right">
+          → {{ entry.qty_after|int }} on hand
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">No stock movements found</div>
+  {% endif %}
+</div>
+
+{% endblock %}

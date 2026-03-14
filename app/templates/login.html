@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block auth_content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-icon" style="width:32px;height:32px;background:#1a1a18;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 16 16" fill="#f8f7f4" width="16" height="16"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></svg>
+      </div>
+      <span style="font-size:15px;font-weight:500;font-family:'IBM Plex Sans',sans-serif">CoreInventory</span>
+    </div>
+    <div class="auth-title">Sign in</div>
+    <div class="auth-sub">Manage your inventory operations</div>
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/login">
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" name="email" placeholder="admin@core.com" required>
+      </div>
+      <div class="form-row">
+        <label class="form-label" style="display:flex;justify-content:space-between;">
+          <span>Password</span>
+          <a href="/forgot-password" style="font-weight:normal;font-size:13px;">Forgot Password?</a>
+        </label>
+        <input class="form-input" type="password" name="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px">Sign in</button>
+    </form>
+
+    <div class="auth-foot">
+      Don't have an account? <a href="/signup">Sign up</a>
+      <br><br>
+      <span style="color:var(--text-faint)">Demo: admin@core.com / admin123</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

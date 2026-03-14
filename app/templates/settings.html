@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Settings – CoreInventory{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+
+<div class="section-title section-gap">Warehouses</div>
+<div class="table-wrap section-gap">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Code</th><th>Location</th><th>Stock Lines</th></tr>
+    </thead>
+    <tbody>
+      {% for w in warehouses %}
+      <tr>
+        <td><strong>{{ w.name }}</strong></td>
+        <td class="td-mono">{{ w.code }}</td>
+        <td class="td-muted">{{ w.location or '—' }}</td>
+        <td class="td-muted">{{ w.stock_levels|length }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section-title">Reorder Rules</div>
+<div class="table-wrap section-gap">
+  <table>
+    <thead>
+      <tr><th>Product</th><th>SKU</th><th>Min Qty</th><th>Suggested Reorder</th><th>Current Stock</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td><a href="/products/{{ p.id }}" style="font-weight:500">{{ p.name }}</a></td>
+        <td class="td-mono">{{ p.sku }}</td>
+        <td>{{ p.min_qty|int }} {{ p.unit }}</td>
+        <td class="td-muted">{{ (p.min_qty * 3)|int }} {{ p.unit }}</td>
+        <td>{{ p.total_stock|int }} {{ p.unit }}</td>
+        <td>
+          <span class="badge badge-{{ p.stock_status }}">
+            {% if p.stock_status=='ok' %}OK{% elif p.stock_status=='low' %}Reorder{% else %}Out{% endif %}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section-title">Product Categories</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Category</th><th>Products</th></tr></thead>
+    <tbody>
+      {% set cats = {} %}
+      {% for p in products %}
+        {% if p.category %}
+          {% if p.category.name not in cats %}
+            {% set _ = cats.update({p.category.name: 0}) %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% set cat_data = {} %}
+      {% for p in products %}
+        {% if p.category %}
+          {% if p.category.name in cat_data %}
+            {% set _ = cat_data.update({p.category.name: cat_data[p.category.name] + 1}) %}
+          {% else %}
+            {% set _ = cat_data.update({p.category.name: 1}) %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% for name, count in cat_data.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td class="td-muted">{{ count }} product{{ 's' if count != 1 }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="2" class="empty-state">No categories</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

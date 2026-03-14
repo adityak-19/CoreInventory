@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} – CoreInventory{% endblock %}
+{% block page_title %}{{ product.name }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="/products/" class="btn">← Products</a>
+<button class="btn btn-primary" onclick="openModal('modal-edit')">Edit</button>
+{% endblock %}
+
+{% block content %}
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+  <div class="kpi-card">
+    <div class="kpi-label">Total On Hand</div>
+    <div class="kpi-value {% if product.stock_status=='out' %}diff-neg{% elif product.stock_status=='low' %}kpi-warn{% endif %}">{{ product.total_stock|int }}</div>
+    <div class="kpi-sub">{{ product.unit }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Min Qty (reorder)</div>
+    <div class="kpi-value">{{ product.min_qty|int }}</div>
+    <div class="kpi-sub">{{ product.unit }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Status</div>
+    <div style="margin-top:6px">
+      <span class="badge badge-{{ product.stock_status }}" style="font-size:13px;padding:4px 10px;">
+        {% if product.stock_status=='ok' %}In Stock{% elif product.stock_status=='low' %}Low Stock{% else %}Out of Stock{% endif %}
+      </span>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <!-- Product info -->
+  <div>
+    <div class="section-title">Product Details</div>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td class="td-muted" style="width:40%">SKU</td><td class="td-mono">{{ product.sku }}</td></tr>
+          <tr><td class="td-muted">Category</td><td>{{ product.category.name if product.category else '—' }}</td></tr>
+          <tr><td class="td-muted">Unit</td><td>{{ product.unit }}</td></tr>
+          <tr><td class="td-muted">Min Quantity</td><td>{{ product.min_qty|int }}</td></tr>
+          <tr><td class="td-muted">Created</td><td>{{ product.created_at.strftime('%b %d, %Y') }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Stock by location -->
+  <div>
+    <div class="section-title">Stock by Location</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Warehouse</th><th>Qty</th></tr></thead>
+        <tbody>
+          {% for sl in product.stock_levels %}
+          <tr>
+            <td>{{ sl.warehouse.name }}</td>
+            <td><strong>{{ sl.quantity|int }}</strong> {{ product.unit }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="2" class="empty-state">No stock recorded</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-backdrop" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">Edit Product</div>
+    <form method="post" action="/products/{{ product.id }}/edit">
+      <div class="form-row">
+        <label class="form-label">Name</label>
+        <input class="form-input" name="name" value="{{ product.name }}" required>
+      </div>
+      <div class="form-grid form-row">
+        <div>
+          <label class="form-label">SKU</label>
+          <input class="form-input" name="sku" value="{{ product.sku }}" required>
+        </div>
+        <div>
+          <label class="form-label">Unit</label>
+          <select class="form-select" name="unit">
+            {% for u in ['kg','units','pcs','liters','m'] %}
+            <option {% if product.unit==u %}selected{% endif %}>{{ u }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-grid form-row">
+        <div>
+          <label class="form-label">Category</label>
+          <select class="form-select" name="category_id" id="edit-cat-sel"></select>
+        </div>
+        <div>
+          <label class="form-label">Min Quantity</label>
+          <input class="form-input" name="min_qty" type="number" value="{{ product.min_qty }}" min="0">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal('modal-edit')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  fetch('/api/categories').then(r=>r.json()).then(cats=>{
+    const sel = document.getElementById('edit-cat-sel');
+    sel.innerHTML = cats.map(c=>`<option value="${c.id}" ${c.id=={{ product.category_id }} ? 'selected':''}>${c.name}</option>`).join('');
+  }).catch(()=>{});
+});
+</script>
+{% endblock %}

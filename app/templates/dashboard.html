@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – CoreInventory{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+{% if kpis.low_stock or kpis.out_of_stock %}
+<span class="low-pill">⚠ {{ kpis.low_stock + kpis.out_of_stock }} stock alert(s)</span>
+{% endif %}
+<a href="/receipts" class="btn btn-primary">+ New Receipt</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Total Products</div>
+    <div class="kpi-value">{{ kpis.total_products }}</div>
+    <div class="kpi-sub">items tracked</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Total On Hand</div>
+    <div class="kpi-value">{{ kpis.total_on_hand }}</div>
+    <div class="kpi-sub">units across all</div>
+  </div>
+  <div class="kpi-card {% if kpis.out_of_stock %}kpi-danger{% elif kpis.low_stock %}kpi-warn{% endif %}">
+    <div class="kpi-label">Low / Out of Stock</div>
+    <div class="kpi-value">{{ kpis.low_stock }} / {{ kpis.out_of_stock }}</div>
+    <div class="kpi-sub">need attention</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Pending Receipts</div>
+    <div class="kpi-value">{{ kpis.pending_receipts }}</div>
+    <div class="kpi-sub">awaiting validation</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Pending Deliveries</div>
+    <div class="kpi-value">{{ kpis.pending_deliveries }}</div>
+    <div class="kpi-sub">in progress</div>
+  </div>
+</div>
+
+<!-- Filters -->
+<form method="get" action="/">
+  <div class="filter-bar">
+    <select class="filter-select" name="type_filter" onchange="this.form.submit()">
+      <option value="">All Types</option>
+      {% for t in ['Receipt','Delivery','Transfer','Adjustment'] %}
+      <option value="{{ t }}" {% if type_filter==t %}selected{% endif %}>{{ t }}s</option>
+      {% endfor %}
+    </select>
+    <select class="filter-select" name="status_filter" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      {% for s in ['Done','Ready','Draft','Waiting','Canceled'] %}
+      <option value="{{ s }}" {% if status_filter==s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <input class="search-input" name="search" value="{{ search }}" placeholder="Search reference, party...">
+    <button type="submit" class="btn">Search</button>
+    {% if type_filter or status_filter or search %}
+    <a href="/" class="btn">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+<!-- Operations table -->
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Reference</th>
+        <th>Type</th>
+        <th>Party / Notes</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Lines</th>
+        <th>Warehouse</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for op in operations %}
+      <tr>
+        <td class="td-mono">{{ op.reference }}</td>
+        <td>{{ op.type }}</td>
+        <td class="td-muted">{{ op.party or '—' }}</td>
+        <td class="td-muted">{{ op.created_at.strftime('%b %d, %Y') }}</td>
+        <td>
+          <span class="badge badge-{{ op.status.lower() }}">{{ op.status }}</span>
+        </td>
+        <td class="td-muted">{{ op.lines|length }}</td>
+        <td class="td-muted">{{ op.warehouse.name if op.warehouse else '—' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty-state">No operations found</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

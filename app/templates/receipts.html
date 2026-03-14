@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Receipts – CoreInventory{% endblock %}
+{% block page_title %}Receipts{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary" onclick="openModal('modal-receipt')">+ New Receipt</button>
+{% endblock %}
+
+{% block content %}
+
+<div class="tab-bar">
+  {% for s in ['All','Draft','Ready','Done','Canceled'] %}
+  <a class="tab {% if status_filter==s or (s=='All' and not status_filter) %}active{% endif %}"
+     href="/receipts?status={{ s }}">{{ s }}</a>
+  {% endfor %}
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Reference</th><th>Supplier</th><th>Date</th><th>Status</th><th>Lines</th><th>Warehouse</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for op in operations %}
+      <tr>
+        <td class="td-mono">{{ op.reference }}</td>
+        <td>{{ op.party or '—' }}</td>
+        <td class="td-muted">{{ op.created_at.strftime('%b %d, %Y') }}</td>
+        <td><span class="badge badge-{{ op.status.lower() }}">{{ op.status }}</span></td>
+        <td class="td-muted">{{ op.lines|length }}</td>
+        <td class="td-muted">{{ op.warehouse.name if op.warehouse else '—' }}</td>
+        <td>
+          <div class="td-actions">
+            {% if op.status not in ['Done','Canceled'] %}
+            <form method="post" action="/receipts/{{ op.id }}/validate" style="display:inline">
+              <button type="submit" class="btn btn-sm btn-primary">Validate</button>
+            </form>
+            <form method="post" action="/receipts/{{ op.id }}/cancel" style="display:inline">
+              <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+            </form>
+            {% else %}
+            <span class="td-muted" style="font-size:12px">{{ op.validated_at.strftime('%b %d') if op.validated_at else '—' }}</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty-state">No receipts found</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- New Receipt Modal -->
+<div class="modal-backdrop" id="modal-receipt">
+  <div class="modal">
+    <div class="modal-title">New Receipt</div>
+    <form method="post" action="/receipts/create">
+      <div class="form-row">
+        <label class="form-label">Supplier Name</label>
+        <input class="form-input" name="party" placeholder="e.g. SteelCorp Ltd" required>
+      </div>
+      <div class="form-grid form-row">
+        <div>
+          <label class="form-label">Product</label>
+          <select class="form-select" name="product_id" required>
+            {% for p in products %}
+            <option value="{{ p.id }}">{{ p.name }} ({{ p.sku }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Quantity</label>
+          <input class="form-input" name="quantity" type="number" step="0.01" min="0.01" placeholder="0" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Destination Warehouse</label>
+        <select class="form-select" name="warehouse_id" required>
+          {% for w in warehouses %}
+          <option value="{{ w.id }}">{{ w.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal('modal-receipt')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create & Set Ready</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
