@@ -2,13 +2,22 @@
 
 A full-featured Inventory Management System built with **FastAPI**, **SQLAlchemy**, **SQLite**, and **Jinja2** templates.
 
+## Problem Statement
+
+A modular Inventory Management System (IMS) that digitizes and streamlines all stock-related operations within a business. The goal is to replace manual registers, Excel sheets, and scattered tracking methods with a centralized, real-time, easy-to-use app.
+
+## Target Users
+
+- **Inventory Managers** – manage incoming & outgoing stock.
+- **Warehouse Staff** – perform transfers, picking, shelving, and counting.
+
 ---
 
 ## Features
 
-- **Authentication** — Sign up / login with JWT tokens in cookies
-- **Dashboard** — KPIs, filterable operations log
-- **Products** — Catalog with stock levels, SKU, categories, reorder rules
+- **Authentication** — Sign up / login with JWT tokens in cookies, OTP-based password reset
+- **Dashboard** — KPIs (Total Products, Low Stock, Pending Operations), smart filters
+- **Products** — Catalog with stock levels, SKU search, categories, reorder rules
 - **Receipts** — Receive goods from suppliers, auto-increase stock on validation
 - **Deliveries** — Ship goods to customers, auto-decrease stock on validation
 - **Internal Transfers** — Move stock between warehouses/locations
@@ -16,6 +25,23 @@ A full-featured Inventory Management System built with **FastAPI**, **SQLAlchemy
 - **Move History** — Full stock ledger with filterable log
 - **Settings** — Warehouse management, reorder rules view
 - **Multi-warehouse support** — Stock tracked per product per warehouse
+- **Alerts** — Low stock and out-of-stock alerts
+- **Profile** — Manage user profile setting
+
+---
+
+## Inventory Flow Example
+
+1. **Receive Goods from Vendor** (e.g., receive 100 kg Steel → Stock: +100)
+2. **Internal Transfer** (e.g., Main Store → Production Rack)
+3. **Deliver Finished Goods** (e.g., Ship out 20 units → Stock: -20)
+4. **Stock Adjustments** (e.g., 3 kg material damaged → Stock: -3)
+
+All operations are sequentially logged in the Stock Ledger.
+
+## Mockup Reference
+
+- [Excalidraw Design](https://link.excalidraw.com/l/65VNwvy7c4X/3ENvQFu9o8R)
 
 ---
 
