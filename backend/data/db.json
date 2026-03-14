@@ -1,0 +1,246 @@
+{
+  "users": [
+    {
+      "id": "u-4eae5482-3d4a-4539-b3ce-3ef7bb19eb13",
+      "name": "Test",
+      "email": "test@gmail.com",
+      "role": "manager",
+      "passwordHash": "$2a$10$pPyv5zzj7tZcJjdJYBFIAeKN0URq/OXJcFiSeg/3e.nVazGPu5Mmy",
+      "createdAt": "2026-03-14T07:43:44.213Z"
+    },
+    {
+      "id": "u-3faf6901-82f9-48aa-8d74-e4bd3da8b309",
+      "name": "Demo Manager",
+      "email": "demo@coreinventory.app",
+      "role": "manager",
+      "passwordHash": "$2a$10$W8mOPwAtVGG0WFPK9lO3LegKP5Dr5HR6BMJ5acGKfVO/RABdyEd/u",
+      "createdAt": "2026-03-14T07:14:10.076Z"
+    }
+  ],
+  "resetOtps": [],
+  "inventoryState": {
+    "products": [
+      {
+        "id": "p-1773474377498-8",
+        "name": "Copper Wire",
+        "sku": "CPR-001",
+        "category": "Raw Material",
+        "uom": "kgs",
+        "reorderLevel": 50
+      },
+      {
+        "id": "p-steel",
+        "name": "Steel Rod",
+        "sku": "STL-001",
+        "category": "Raw Material",
+        "uom": "kg",
+        "reorderLevel": 20
+      },
+      {
+        "id": "p-chair",
+        "name": "Chair Frame",
+        "sku": "CHR-110",
+        "category": "Finished Goods",
+        "uom": "pcs",
+        "reorderLevel": 12
+      },
+      {
+        "id": "p-bolt",
+        "name": "Hex Bolt",
+        "sku": "BLT-450",
+        "category": "Consumables",
+        "uom": "pcs",
+        "reorderLevel": 80
+      }
+    ],
+    "warehouses": [
+      {
+        "id": "wh-legacy-1",
+        "name": "Main Warehouse",
+        "code": "WH/L1",
+        "address": ""
+      },
+      {
+        "id": "wh-legacy-2",
+        "name": "Production Floor",
+        "code": "WH/L2",
+        "address": ""
+      },
+      {
+        "id": "wh-legacy-3",
+        "name": "Warehouse 2",
+        "code": "WH/L3",
+        "address": ""
+      },
+      {
+        "id": "wh-legacy-4",
+        "name": "Rack A",
+        "code": "WH/L4",
+        "address": ""
+      },
+      {
+        "id": "wh-legacy-5",
+        "name": "Rack B",
+        "code": "WH/L5",
+        "address": ""
+      }
+    ],
+    "locations": [
+      {
+        "id": "loc-a",
+        "name": "Rack A",
+        "code": "WH/MAIN/A",
+        "warehouseId": "wh-main"
+      },
+      {
+        "id": "loc-b",
+        "name": "Rack B",
+        "code": "WH/MAIN/B",
+        "warehouseId": "wh-main"
+      },
+      {
+        "id": "loc-p",
+        "name": "Shelf P1",
+        "code": "WH/PROD/P1",
+        "warehouseId": "wh-prod"
+      }
+    ],
+    "stockByLocation": {
+      "p-steel": {
+        "wh-legacy-1": 150,
+        "wh-legacy-2": 0,
+        "wh-legacy-3": 0,
+        "wh-legacy-4": 0,
+        "wh-legacy-5": 0
+      },
+      "p-chair": {
+        "wh-legacy-1": 40,
+        "wh-legacy-2": 12,
+        "wh-legacy-3": 4,
+        "wh-legacy-4": 0,
+        "wh-legacy-5": 0
+      },
+      "p-bolt": {
+        "wh-legacy-1": 250,
+        "wh-legacy-2": 40,
+        "wh-legacy-3": 20,
+        "wh-legacy-4": 0,
+        "wh-legacy-5": 0
+      },
+      "p-1773474377498-8": {
+        "wh-legacy-1": 20,
+        "wh-legacy-2": 0,
+        "wh-legacy-3": 0,
+        "wh-legacy-4": 0,
+        "wh-legacy-5": 0
+      }
+    },
+    "operations": [
+      {
+        "id": "OP-R1",
+        "type": "Receipt",
+        "status": "Done",
+        "contact": "MetalWorks Ltd",
+        "scheduleDate": "2026-03-14",
+        "responsible": "Admin",
+        "warehouseId": "wh-legacy-1",
+        "items": [
+          {
+            "productId": "p-steel",
+            "qty": 50,
+            "doneQty": 0
+          }
+        ],
+        "createdAt": "2026-03-14"
+      },
+      {
+        "id": "OP-D1",
+        "type": "Delivery",
+        "status": "Ready",
+        "contact": "Apex Interiors",
+        "scheduleDate": "2026-03-14",
+        "responsible": "Admin",
+        "warehouseId": "wh-legacy-1",
+        "items": [
+          {
+            "productId": "p-chair",
+            "qty": 10,
+            "doneQty": 0
+          }
+        ],
+        "createdAt": "2026-03-14"
+      },
+      {
+        "id": "OP-T1",
+        "type": "Internal Transfer",
+        "status": "Draft",
+        "contact": "Legacy",
+        "scheduleDate": "2026-03-14",
+        "responsible": "Admin",
+        "warehouseId": "wh-legacy-1",
+        "fromWarehouseId": "wh-legacy-1",
+        "toWarehouseId": "wh-legacy-2",
+        "items": [
+          {
+            "productId": "p-steel",
+            "qty": 25,
+            "doneQty": 0
+          }
+        ],
+        "createdAt": "2026-03-14"
+      }
+    ],
+    "ledger": [
+      {
+        "id": "lg-1773474949688-738",
+        "date": "2026-03-14",
+        "type": "Receipt",
+        "productId": "p-steel",
+        "qtyDelta": 50,
+        "from": "MetalWorks Ltd",
+        "to": "Main Warehouse",
+        "note": "op-r1 validated"
+      },
+      {
+        "id": "lg-1773474377498-340",
+        "date": "2026-03-14",
+        "type": "Adjustment",
+        "productId": "p-1773474377498-8",
+        "qtyDelta": 20,
+        "from": "System",
+        "to": "Main Warehouse",
+        "note": "Initial stock"
+      },
+      {
+        "id": "lg-1",
+        "type": "Receipt",
+        "productId": "p-steel",
+        "qtyDelta": 100,
+        "from": "Vendor",
+        "to": "Main Warehouse",
+        "date": "2026-03-14",
+        "note": "Opening stock"
+      },
+      {
+        "id": "lg-2",
+        "type": "Delivery",
+        "productId": "p-chair",
+        "qtyDelta": -8,
+        "from": "Main Warehouse",
+        "to": "Customer",
+        "date": "2026-03-14",
+        "note": "SO-4202"
+      },
+      {
+        "id": "lg-3",
+        "type": "Internal Transfer",
+        "productId": "p-bolt",
+        "qtyDelta": 0,
+        "from": "Main Warehouse",
+        "to": "Production Floor",
+        "date": "2026-03-14",
+        "note": "Transfer 60 units"
+      }
+    ]
+  }
+}
